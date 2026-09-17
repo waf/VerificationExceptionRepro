@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>CastlePeCapture</AssemblyName>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <!--
+      PersistentProxyBuilder only exists on Castle.Core master, not in the 5.2.1 package, so this
+      project references a locally built Castle.Core. Clone castleproject/Core next to this repo and
+      build it, or point CastleCorePath somewhere else:
+
+        dotnet build src/CastlePeCapture -p:CastleCorePath=C:\path\to\Castle.Core.dll
+  -->
+  <PropertyGroup>
+    <CastleCorePath Condition="'$(CastleCorePath)' == ''">$(MSBuildThisFileDirectory)..\..\..\Core\src\Castle.Core\bin\Debug\net9.0\Castle.Core.dll</CastleCorePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>$(CastleCorePath)</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

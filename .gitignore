@@ -1,0 +1,8 @@
+bin/
+obj/
+*.user
+
+# Emitted images written by the harnesses.
+*.dll
+!src/**/lib/*.dll
+build.log
