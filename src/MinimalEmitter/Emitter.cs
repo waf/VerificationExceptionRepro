@@ -38,6 +38,16 @@ public static class Emitter
 
             MethodBuilder over = DefineGenericMethod(proxy, template.Name, template, (il, gp) =>
             {
+#if NO_INVOCATION
+                // Call the callback straight from the override, so no generic type is ever closed
+                // over this method's own !!0.
+                il.Emit(OpCodes.Ldarg_0);
+                if (parameters.Length == 1) il.Emit(OpCodes.Ldarg_1);
+                il.Emit(OpCodes.Call, callback.MakeGenericMethod(gp[0]));
+                il.Emit(OpCodes.Ret);
+                return;
+#endif
+
                 Type closedInv = invType.MakeGenericType(gp[0]);
                 ConstructorInfo closedCtor = TypeBuilder.GetConstructor(closedInv, invCtor);
                 LocalBuilder arguments = il.DeclareLocal(typeof(object[]));

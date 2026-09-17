@@ -17,7 +17,10 @@ module.
 ## Summary
 
 - The fault seems to be related to the builder.  `PersistedAssemblyBuilder` never reproduces it; a runtime `AssemblyBuilder` does.
-- A `System.Reflection.Emit` reproduction, with no Castle, shows the issue.
+- This repo has 3 different reproductions/harnesses:
+   - `CastleHarness` - the original castle-based reproduction
+   - `FullEmitter` - reproducing the same bug with System.Reflection.Emit (SRE) without castle.
+   - `MinimalEmitter` - same as above, but a bit shorter.
 - All three harnesses emit IL accepted by `ilverify` (though only in its persisted rendering. See the
   details in the IL verification section).
 - Generation does not have to overlap with JIT. Building every type first and then invoking
@@ -44,9 +47,9 @@ The persisted path never fails, at any proxy count. The `FullEmitter` reproducti
 
 | project | role |
 | --- | --- |
-| `src/MinimalEmitter` | reduced SRE emitter; runs the builder comparison and the `minimal` column |
-| `src/FullEmitter` | tpflueger's emitter unreduced, same driver; the `full` column |
-| `src/CastleHarness` | DynamicProxy from a console application; the `castle` column |
+| `src/MinimalEmitter` | reduced SRE emitter; runs the builder comparison and the `Minimal SRE repro` column |
+| `src/FullEmitter` | tpflueger's emitter unreduced, same driver; the `SRE Repro` column |
+| `src/CastleHarness` | DynamicProxy from a console application; the `Castle repro` column |
 | `src/CastleXunitHarness` | the issue's repro in its original xunit shape, for the comparison above |
 | `src/CastlePeCapture` | writes DynamicProxy's PE image for `ilverify` |
 
@@ -70,7 +73,9 @@ per module.
 | no concurrency (`ONE_CLASS`) | 0/1200 | | 0/1200 | | 0/1200 | |
 | one proxy type per module (`ONE_TYPE`) | 0/600 | | 0/600 | | 0/600 | |
 
-Conditions are compile-time, one per build: `dotnet build -p:Variant=NO_SIBLING`.
+Conditions are compile-time, one per build: `dotnet build -p:Variant=NO_SIBLING`. Available variants:
+`SCALAR`, `NO_CONSTRAINT`, `NO_SIBLING`, `OWN_GENERATOR`, `NO_PROCEED`, `ONE_CLASS`, `ONE_TYPE`, and
+`NO_INVOCATION` on the emitters only.
 
 ```
 ./run-condition-matrix.sh
